@@ -27,11 +27,13 @@ class Blog(db.Model):
 class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), unique=True)
     email = db.Column(db.String(120), unique=True)
     pw_hash = db.Column(db.String(120))
     blogs = db.relationship('Blog', backref='owner')
 
-    def __init__(self, email, password):
+    def __init__(self, name, email, password):
+        self.name = name
         self.email = email
         self.pw_hash = make_pw_hash(password)
 
@@ -64,13 +66,14 @@ def login():
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
+        name = request.form['name']
         email = request.form['email']
         password = request.form['password']
         verify = request.form['verify']
 
         existing_user = User.query.filter_by(email=email).first()
         if not existing_user:
-            new_user = User(email, password)
+            new_user = User(name, email, password)
             db.session.add(new_user)
             db.session.commit()
             session['email'] = email
@@ -84,7 +87,7 @@ def register():
 
 @app.route('/')
 def index():
-    return redirect('/blog')
+    return redirect('/all-users')
 
 
 @app.route('/blog', methods=['GET'])
@@ -144,6 +147,19 @@ def logout():
     del session['email']
     return redirect('/')
 
+@app.route('/all-users', methods=['POST','GET'])
+def all_users():
+
+    if request.args:
+        selected_user = request.args.get("owner_id")
+        # user = User.query.filter_by(id=selected_user).first()
+        by_user = Blog.query.filter_by(owner=selected_user).all()
+        return render_template('by_user.html', title="User Blogs", blogs=by_user)
+    else:
+        users = User.query.all()
+
+        return render_template('all_users.html', title="All Users",
+        users=users)
 
 
 if __name__ == '__main__':
