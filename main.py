@@ -151,10 +151,10 @@ def logout():
 def all_users():
 
     if request.args:
-        selected_user = request.args.get("owner_id")
-        # user = User.query.filter_by(id=selected_user).first()
-        by_user = Blog.query.filter_by(owner=selected_user).all()
-        return render_template('by_user.html', title="User Blogs", blogs=by_user)
+        selected_user = request.args.get("id")
+        by_user = User.query.get(selected_user)
+        blogs = Blog.query.filter_by(owner=by_user).all()
+        return render_template('by_user.html', title="User Blogs", blogs=blogs, user=by_user)
     else:
         users = User.query.all()
 

@@ -2,18 +2,18 @@
 
 {% block content %}
 
-<h1>Blogs by:</h1>
+    <h1>Blogs by: {{user.name}}</h1>
 
-{% if blogs|length == 0 %}
-<p>No blogs yet.</p>
+    {% if blogs|length == 0 %}
+    <p>No blogs yet.</p>
 
-{% else %}
+    {% else %}
 
-    {% for blog in blogs %}
-        <h2><a href="/blog?id={{blog.id}}">{{blog.title}}</a></h2>
-        <p>{{blog.body}}</p>
-        <hr>
-    {% endfor %}
+        {% for blog in blogs %}
+            <h2><a href="/blog?id={{blog.id}}">{{blog.title}}</a></h2>
+            <p>{{blog.body}}</p>
+            <hr>
+        {% endfor %}
 
 {% endif %}
 
